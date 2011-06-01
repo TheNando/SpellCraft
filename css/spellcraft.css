@@ -1,0 +1,49 @@
+/*-- body --*/
+BODY
+{
+	background-color: #FFF;
+	color: #333436;
+	font-family: "Lucida Sans Unicode", "Trebuchet MS", Helvetica, Sans-Serif;
+	font-size: 13px;
+	line-height: 1.6em;
+	padding: 50px;
+
+}
+.GridCell
+{
+	width: 40px;
+	height: 40px;
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+	font-weight: bold;
+	background-image: -webkit-gradient( linear, right bottom, left top, color-stop(0.17, #F0EDB7), color-stop(0.8, #C9B37D), color-stop(0.9, #CCAF76) );
+	border-radius: 5px;
+	border: 2px solid #FFFFFF;
+	-webkit-user-select: none;
+	position: relative;
+}
+.Selected
+{
+	border: 2px solid #D20000;
+}
+.CenterRow .GridCell
+{
+	border: 2px solid #FFD700;
+}
+.GridRow
+{
+	display: table-row;
+	-webkit-user-select: none;
+}
+#lettergrid
+{
+	padding: 20px;
+	border: 1px solid #000;
+	float: left;
+}
+#stats
+{
+	padding: 20px;
+	float: left;
+}
