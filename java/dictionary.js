@@ -16,7 +16,10 @@ var Dictionary =
                 Dictionary.dict[i] = " ";
             
             for (i = 0; i < words.length; i++ )
+            {
+                words[i] = words[i].replace("\r","");
                 Dictionary.dict[words[i].length] += words[i] + " ";
+            }
         });
     },
     lookUp: function(word)
