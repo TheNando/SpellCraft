@@ -23,14 +23,6 @@ var cb_MouseMove = function(evt)
     if(!dragging)
         return;
     
-    // Reset LetterGrid selected
-    if(LetterGrid.Words.length > 0)
-    {
-        cell_first_selected = false;
-        LetterGrid.Words = [];
-        $('#stats').html('');
-    }
-
     var curX = Math.floor((evt.clientX - cell_offset.x) / cell_size.width);
     var curY = Math.floor((evt.clientY - cell_offset.y) / cell_size.height);
 
@@ -39,7 +31,7 @@ var cb_MouseMove = function(evt)
         LetterGrid.shift(cell_origin, 'Horizontal', curX - cell_origin.x);
         cell_origin.x = curX;
         dragged = true;
-    } else if(curY != cell_origin.y) {
+    } else if (curY != cell_origin.y) {
         LetterGrid.shift(cell_origin, 'Vertical', curY - cell_origin.y);
         cell_origin.y = curY;
         dragged = true;
@@ -162,6 +154,11 @@ LetterGrid =
         var save = '';
         var i;
         var cell;
+        
+        // Clear selected words
+        cell_first_selected = false;
+        LetterGrid.Words = [];
+        $('#stats').html('');
 
         switch(direction)
         {
@@ -260,6 +257,7 @@ LetterGrid =
         }
         
         LetterGrid.toHtml();
+        $('.Selected').removeClass('Selected');
         return;
     },
     addWord: function(word)
