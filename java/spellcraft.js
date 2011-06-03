@@ -12,8 +12,38 @@ var cb_MouseDown = function(evt)
 {
     dragging = true;
     dragged = false;
-    cell_origin.x = $(this).attr("col");
-    cell_origin.y = $(this).attr("row");
+    //cell_origin.x = $(this).attr("col");
+    //cell_origin.y = $(this).attr("row");
+    cell_origin.x = Math.floor((evt.clientX - cell_offset.x) / cell_size.width);
+    cell_origin.y = Math.floor((evt.clientY - cell_offset.y) / cell_size.height);
+};
+
+var cb_MouseMove = function(evt)
+{
+    if(!dragging)
+        return;
+    
+    // Reset LetterGrid selected
+    if(LetterGrid.Words.length > 0)
+    {
+        cell_first_selected = false;
+        LetterGrid.Words = [];
+        $('#stats').html('');
+    }
+
+    var curX = Math.floor((evt.clientX - cell_offset.x) / cell_size.width);
+    var curY = Math.floor((evt.clientY - cell_offset.y) / cell_size.height);
+
+    if(curX != cell_origin.x)
+    {
+        LetterGrid.shift(cell_origin, 'Horizontal', curX - cell_origin.x);
+        cell_origin.x = curX;
+        dragged = true;
+    } else if(curY != cell_origin.y) {
+        LetterGrid.shift(cell_origin, 'Vertical', curY - cell_origin.y);
+        cell_origin.y = curY;
+        dragged = true;
+    }
 };
 
 var cb_MouseUp = function(evt)
@@ -57,26 +87,6 @@ var cb_MouseUp = function(evt)
     }
 };
 
-var cb_MouseMove = function(evt)
-{
-    if(!dragging)
-        return;
-    
-    var curX = Math.floor((evt.clientX - cell_offset.x) / cell_size.width);
-    var curY = Math.floor((evt.clientY - cell_offset.y) / cell_size.height);
-
-    if(curX != cell_origin.x)
-    {
-        LetterGrid.shift(cell_origin, 'Horizontal', curX - cell_origin.x);
-        cell_origin.x = curX;
-        dragged = true;
-    } else if(curY != cell_origin.y) {
-        LetterGrid.shift(cell_origin, 'Vertical', curY - cell_origin.y);
-        cell_origin.y = curY;
-        dragged = true;
-    }
-};
-
 LetterGrid =
 {
 	initialized	: false,	
@@ -84,7 +94,7 @@ LetterGrid =
     Rows : 7,
     Grid : [],
     GridHTML : null,
-    Words : null,
+    Words : [],
     init: function()
 	{
         if(LetterGrid.initialized)
@@ -92,9 +102,6 @@ LetterGrid =
 			alert('ALREADY initialized.');
 			return false;
 		}
-        
-        //var chars = "ABCDEFGHIJKLMNOPQRSTUVWXTZ";
-        //var rand = 0;
         
         LetterGrid.Grid = [];
         
@@ -105,18 +112,17 @@ LetterGrid =
             for (var y = 0; y < LetterGrid.Rows; y++)
             {
                 LetterGrid.Grid[x][y] = Letters.getRandomLetter();
-                
-                //// Legacy
-                //rand = Math.floor(Math.random() * chars.length);
-                //LetterGrid.Grid[x][y] = chars.substring(rand, rand+1);
             }
         }
         LetterGrid.toHtml();
+        
+        $('#lettergrid').html(LetterGrid.GridHTML)
+            .mousemove(cb_MouseMove)
+            .mousedown(cb_MouseDown)
+            .mouseup(cb_MouseUp);
     },
     toHtml: function()
     {
-        LetterGrid.Words = [];
-        $('#stats').html('');
         LetterGrid.GridHTML = '';
 
         // Build HTML
@@ -128,17 +134,18 @@ LetterGrid =
             {
                 LetterGrid.GridHTML += '<div class="GridCell" col={x} row={y}>'.replace("{x}", x).replace("{y}", y) + LetterGrid.Grid[x][y] + '</div>';
             }
+
             LetterGrid.GridHTML += '</div>\n';
         }
-        
-        $('#lettergrid').html(LetterGrid.GridHTML).mousemove(cb_MouseMove);
-        $('.GridCell').mousedown(cb_MouseDown).mouseup(cb_MouseUp);
+
+        //$('.GridCell').mousedown(cb_MouseDown).mouseup(cb_MouseUp);
     },
     shift: function(origin, direction, offset)
     {
         // Letter to save for swap
         var save = '';
         var i;
+        var cell;
 
         switch(direction)
         {
@@ -150,21 +157,48 @@ LetterGrid =
                 
                 // ...and push right from right to left
                 for (i = LetterGrid.Columns - 1; i >= 0; i--)
+                {
+                    cell = $('.GridCell[col=x][row=y]'.replace('x', i).replace('y',origin.y));
+                    
                     if(i === 0)
                         LetterGrid.Grid[i][origin.y] = save;
                     else
                         LetterGrid.Grid[i][origin.y] = LetterGrid.Grid[i - 1][origin.y];
+                    
+                    cell.attr("new_col", (i + 1) % LetterGrid.Columns);
+                }
             } else {
                 // If distance is negative, save the left most letter...
                 save = LetterGrid.Grid[0][origin.y];
                 
                 // ...and push left from left to right
                 for (i = 0; i < LetterGrid.Columns; i++)
-                    if(i == LetterGrid.Columns - 1)
+                {
+                    cell = $('.GridCell[col=x][row=y]'.replace('x', i).replace('y',origin.y));
+                    
+                    if(i === LetterGrid.Columns - 1)
                         LetterGrid.Grid[i][origin.y] = save;
                     else
                         LetterGrid.Grid[i][origin.y] = LetterGrid.Grid[i + 1][origin.y];
-            }            
+                    
+                    cell.attr("new_col", (i - 1 === -1) ? LetterGrid.Columns - 1 : i - 1);
+                }
+            }
+            
+            // Animate and reset grid afterwards
+            $('.GridCell[row=y]'.replace('y',origin.y)).each(
+                function()
+                {
+                    var distance = $(this).attr("new_col") - $(this).attr("col");
+                    $(this).animate({ left: cell_size.width * distance }, 100,
+                        (Math.abs(distance) === 1) ? null :
+                            function()
+                            {
+                                LetterGrid.toHtml();
+                                $('#lettergrid').html(LetterGrid.GridHTML);
+                            } );
+                }
+            );
             break;
         case 'Vertical':
             if(offset > 0)
@@ -174,21 +208,49 @@ LetterGrid =
                 
                 // ...and push down from bottom to top
                 for (i = LetterGrid.Rows - 1; i >= 0; i--)
+                {
+                    cell = $('.GridCell[col=x][row=y]'.replace('x', origin.x).replace('y',i));
+                    
                     if(i === 0)
                         LetterGrid.Grid[origin.x][i]= save;
                     else
                         LetterGrid.Grid[origin.x][i] = LetterGrid.Grid[origin.x][i - 1];
+                        
+                    cell.attr("new_row", (i + 1) % LetterGrid.Rows);
+                }
             } else {
                 // If distance is positive, save the top most letter...
                 save = LetterGrid.Grid[origin.x][0];
                 
                 // ...and push up from top to bottom
                 for (i = 0; i < LetterGrid.Rows; i++)
+                {
+                    cell = $('.GridCell[col=x][row=y]'.replace('x', origin.x).replace('y',i));
+                    
                     if(i == LetterGrid.Rows - 1)
                         LetterGrid.Grid[origin.x][i] = save;
                     else
                         LetterGrid.Grid[origin.x][i] = LetterGrid.Grid[origin.x][i + 1];
+                        
+                    cell.attr("new_row", (i - 1 === -1) ? LetterGrid.Rows - 1 : i - 1);
+                }
             }
+            
+            // Animate and reset grid afterwards
+            $('.GridCell[col=x]'.replace('x',origin.x)).each(
+                function()
+                {
+                    var distance = $(this).attr("new_row") - $(this).attr("row");
+                    $(this).attr("z-index", -1);
+                    $(this).animate({ top: cell_size.height * distance }, 100,
+                        (Math.abs(distance) === 1) ? null :
+                            function()
+                            {
+                                LetterGrid.toHtml();
+                                $('#lettergrid').html(LetterGrid.GridHTML);
+                            } );
+                }
+            );
             break;
         }
         
@@ -210,7 +272,7 @@ LetterGrid =
 
 $(function()
 {
-    LetterGrid.init();  
+    LetterGrid.init();
     
     cell_offset = { x : $('.GridCell:first').offset().left, y : $('.GridCell:first').offset().top };
     cell_size = {   width : $('.GridCell:first[col=1]').offset().left - cell_offset.x,

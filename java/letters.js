@@ -1,6 +1,9 @@
 var letterDistribution_AllWords;
 var letterDistribution_Scrabble;
 var letterDistribution_SuperScrabble;
+var letterDistribution_Equal;
+var letterDistribution_DoubleVowelEqual;
+
 var letterPointValue_Scrabble;
 
 var Letters =
@@ -133,6 +136,67 @@ letterDistribution_SuperScrabble =
     'y' : { distribution : 0.989795 },
     'z' : { distribution : 1.000000 }
 };
+
+letterDistribution_Equal =
+{
+    'a' : { distribution : 0.038461 },
+    'b' : { distribution : 0.076923 },
+    'c' : { distribution : 0.115384 },
+    'd' : { distribution : 0.153846 },
+    'e' : { distribution : 0.192307 },
+    'f' : { distribution : 0.230769 },
+    'g' : { distribution : 0.269230 },
+    'h' : { distribution : 0.307692 },
+    'i' : { distribution : 0.346153 },
+    'j' : { distribution : 0.384615 },
+    'k' : { distribution : 0.423076 },
+    'l' : { distribution : 0.461538 },
+    'm' : { distribution : 0.499999 },
+    'n' : { distribution : 0.538461 },
+    'o' : { distribution : 0.576923 },
+    'p' : { distribution : 0.615384 },
+    'q' : { distribution : 0.653846 },
+    'r' : { distribution : 0.692307 },
+    's' : { distribution : 0.730769 },
+    't' : { distribution : 0.769230 },
+    'u' : { distribution : 0.807692 },
+    'v' : { distribution : 0.846153 },
+    'w' : { distribution : 0.884615 },
+    'x' : { distribution : 0.923076 },
+    'y' : { distribution : 0.961538 },
+    'z' : { distribution : 1.000000 }
+};
+
+letterDistribution_DoubleVowelEqual =
+{
+    'a' : { distribution : 0.064516 },
+    'b' : { distribution : 0.096774 },
+    'c' : { distribution : 0.129032 },
+    'd' : { distribution : 0.161290 },
+    'e' : { distribution : 0.225806 },
+    'f' : { distribution : 0.258064 },
+    'g' : { distribution : 0.290322 },
+    'h' : { distribution : 0.322580 },
+    'i' : { distribution : 0.387096 },
+    'j' : { distribution : 0.419354 },
+    'k' : { distribution : 0.451612 },
+    'l' : { distribution : 0.483870 },
+    'm' : { distribution : 0.516129 },
+    'n' : { distribution : 0.548387 },
+    'o' : { distribution : 0.612903 },
+    'p' : { distribution : 0.645161 },
+    'q' : { distribution : 0.677419 },
+    'r' : { distribution : 0.709677 },
+    's' : { distribution : 0.741935 },
+    't' : { distribution : 0.774193 },
+    'u' : { distribution : 0.838709 },
+    'v' : { distribution : 0.870967 },
+    'w' : { distribution : 0.903225 },
+    'x' : { distribution : 0.935483 },
+    'y' : { distribution : 0.967741 },
+    'z' : { distribution : 1.000000 }
+};
+
 
 // Letter point value packs
 letterPointValue_Scrabble =
