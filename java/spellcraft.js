@@ -81,7 +81,7 @@ var cb_MouseUp = function(evt)
 
 LetterGrid =
 {
-	initialized	: false,	
+	initialized	: false,
     Columns : 7,
     Rows : 7,
     Grid : [],
@@ -110,12 +110,10 @@ LetterGrid =
 
         LetterGrid.toHtml();
         
-        $('#lettergrid').html(LetterGrid.GridHTML)
-            .mousemove(cb_MouseMove)
-            .mousedown(cb_MouseDown)
-            .mouseup(cb_MouseUp);
+        $('#lettergrid').html(LetterGrid.GridHTML);
             
-        cell_offset = { x : $('.GridCell:first').offset().left, y : $('.GridCell:first').offset().top };
+        cell_offset = { x : $('#lettergrid').offset().left + ( $('#lettergrid').outerWidth() - $('#lettergrid').width() ) / 2,
+                        y : $('#lettergrid').offset().top  + ( $('#lettergrid').outerHeight() - $('#lettergrid').height() ) / 2};
         
         cell_size = {   width : $('.GridCell:first').outerWidth() + 4,
                         height : $('.GridCell:first').outerHeight() + 4 };
@@ -124,16 +122,20 @@ LetterGrid =
         $('#lettergrid').css("width", cell_size.width * LetterGrid.Columns);
         $('#lettergrid').css("height", cell_size.height * LetterGrid.Rows);
         
-        // Place letters onto grid (animation)
-        for(x = 0; x < LetterGrid.Columns; x++)
-        {
-            for (y = 0; y < LetterGrid.Rows; y++)
+        $('.GridCell').css("left", cell_offset.x + cell_size.width * 3).css("top", cell_offset.y + cell_size.height * 3);
+
+        $('.GridCell').each(
+            function()
             {
-                $('.GridCell[col=x][row=y]'.replace('x', x).replace('y', y))
-                    .animate({  "left": cell_offset.x + cell_size.width * x,
-                                "top": cell_offset.y + cell_size.height * y }, 500, 'swing');
+                $(this).animate({  "left": cell_offset.x + cell_size.width * parseInt($(this).attr("col"), 10),
+                                   "top": cell_offset.y + cell_size.height * parseInt($(this).attr("row"), 10)  }, 1000, 'swing' );
             }
-        }
+        );
+        
+        $('#lettergrid')
+            .mousemove(cb_MouseMove)
+            .mousedown(cb_MouseDown)
+            .mouseup(cb_MouseUp);
     },
     toHtml: function()
     {
@@ -248,7 +250,7 @@ LetterGrid =
             $('.GridCell[col=x]'.replace('x',origin.x)).each(
                 function()
                 {
-                    $(this).animate({ top: cell_offset.y + cell_size.height * $(this).attr("new_row") }, 100);
+                    $(this).animate({ top: cell_offset.y + cell_size.height * $(this).attr("new_row") }, 100 );
                     $(this).attr("row", $(this).attr("new_row") );
                 }
             );
@@ -275,5 +277,5 @@ LetterGrid =
 
 $(function()
 {
-    LetterGrid.init();
+    LetterGrid.init();    
 });

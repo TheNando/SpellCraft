@@ -11,7 +11,7 @@ var Letters =
     RandomGenerator : null,
     init: function()
     {
-        letterDistributions = letterDistribution_SuperScrabble;
+        letterDistributions = letterDistribution_AllWords;
         letterPointValues = letterPointValue_Scrabble;
         Letters.RandomGenerator = Math;
         //RandomGenerator = new MersenneTwister();
